@@ -20,15 +20,15 @@ public class Player : MonoBehaviour
     void Update()
     {
         Flip();
-    }
-
-    void FixedUpdate() 
-    {
         rb.velocity = new UnityEngine.Vector2(Input.GetAxis("Horizontal") * speed, rb.velocity.y);
         if (Input.GetKeyDown(KeyCode.Space)) {
             print("JUMP");
             rb.AddForce(transform.up * jumpHeight, ForceMode2D.Impulse);
         }
+    }
+
+    void FixedUpdate() 
+    {
     }
 
     void Flip()
