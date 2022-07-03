@@ -5,26 +5,38 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    Rigidbody2D rb;
+    private Rigidbody2D rb;
+    private Animator animator;
+
+    public Transform groundCheck;
 
     public float speed;
     public float jumpHeight;
 
+    private bool isGrounded = true;
+
     // Start is called before the first frame update
     void Start()
     {
-        print("TEST");
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
         Flip();
+        checkGround();
         rb.velocity = new UnityEngine.Vector2(Input.GetAxis("Horizontal") * speed, rb.velocity.y);
-        if (Input.GetKeyDown(KeyCode.Space)) {
-            print("JUMP");
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded) {
             rb.AddForce(transform.up * jumpHeight, ForceMode2D.Impulse);
+        }
+        if (Input.GetAxis("Horizontal") == 0 && isGrounded) {
+            animator.SetInteger("state", 1);
+        } else if (!isGrounded) {
+            animator.SetInteger("state", 3);
+        } else {
+            animator.SetInteger("state", 2);
         }
     }
 
@@ -40,5 +52,11 @@ public class Player : MonoBehaviour
         if (Input.GetAxis("Horizontal") < 0 ) {
             transform.localRotation = UnityEngine.Quaternion.Euler(0, 180, 0);
         }
+    }
+
+    void checkGround()
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(this.groundCheck.position, 0.2f);
+        isGrounded = colliders.Length > 1;
     }
 }
