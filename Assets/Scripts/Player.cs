@@ -10,6 +10,8 @@ public class Player : MonoBehaviour
 
     public Transform groundCheck;
 
+    public AudioSource hitSound;
+
     public float speed;
     public float jumpHeight;
 
@@ -58,5 +60,22 @@ public class Player : MonoBehaviour
     {
         Collider2D[] colliders = Physics2D.OverlapCircleAll(this.groundCheck.position, 0.2f);
         isGrounded = colliders.Length > 1;
+    }
+
+    public void RecountHP()
+    {
+        print("TEST");
+        hitSound.Play();
+        StartCoroutine(OnHit());
+    }
+
+    IEnumerator OnHit() 
+    {
+        print("TEST");
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        GetComponent<SpriteRenderer>().color = new Color(1f, GetComponent<SpriteRenderer>().color.g - 0.02f, GetComponent<SpriteRenderer>().color.b - 0.02f);
+
+        yield return new WaitForSeconds(0.02f);
+        StartCoroutine(OnHit());
     }
 }
