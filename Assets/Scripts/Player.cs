@@ -8,7 +8,7 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
 
-    private Collider2D collider;
+    private Collider2D collider2d;
 
     public Transform groundCheck;
 
@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        collider = GetComponent<CapsuleCollider2D>();
+        collider2d = GetComponent<CapsuleCollider2D>();
     }
 
     // Update is called once per frame
@@ -88,7 +88,7 @@ public class Player : MonoBehaviour
 
         if (curHp <= 0) {
             // Dead animation
-            collider.enabled = false;
+            collider2d.enabled = false;
         }
 
         StartCoroutine(OnHit());
