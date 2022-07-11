@@ -8,20 +8,27 @@ public class Player : MonoBehaviour
     private Rigidbody2D rb;
     private Animator animator;
 
+    private Collider2D collider;
+
     public Transform groundCheck;
 
     public AudioSource hitSound;
+    public AudioSource hpUpSound;
 
     public float speed;
     public float jumpHeight;
 
     private bool isGrounded = true;
 
+    private int maxHp = 3;
+    private int curHp = 3;
+
     // Start is called before the first frame update
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        collider = GetComponent<CapsuleCollider2D>();
     }
 
     // Update is called once per frame
@@ -62,10 +69,28 @@ public class Player : MonoBehaviour
         isGrounded = colliders.Length > 1;
     }
 
-    public void RecountHP()
+    public void removeAllHP()
     {
-        print("TEST");
-        hitSound.Play();
+        RecountHP(curHp);
+    }
+
+    public void RecountHP(int deltaHp)
+    {
+        curHp += deltaHp;
+
+        if (deltaHp < 0) {
+            hitSound.Play();
+        } else {
+            if (curHp > maxHp) {
+                curHp = maxHp;
+            }
+        }
+
+        if (curHp <= 0) {
+            // Dead animation
+            collider.enabled = false;
+        }
+
         StartCoroutine(OnHit());
     }
 
