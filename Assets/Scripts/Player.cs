@@ -14,14 +14,17 @@ public class Player : MonoBehaviour
 
     public AudioSource hitSound;
     public AudioSource hpUpSound;
+    public Main main;
 
     public float speed;
     public float jumpHeight;
 
     private bool isGrounded = true;
 
-    private int maxHp = 3;
-    private int curHp = 3;
+    private bool isHit = false;
+
+    private int maxHp = 10;
+    private int curHp = 10;
 
     // Start is called before the first frame update
     void Start()
@@ -71,7 +74,7 @@ public class Player : MonoBehaviour
 
     public void removeAllHP()
     {
-        RecountHP(curHp);
+        RecountHP(-curHp);
     }
 
     public void RecountHP(int deltaHp)
@@ -79,7 +82,10 @@ public class Player : MonoBehaviour
         curHp += deltaHp;
 
         if (deltaHp < 0) {
+            StopCoroutine(OnHit());
+            isHit = true;
             hitSound.Play();
+            StartCoroutine(OnHit());
         } else {
             if (curHp > maxHp) {
                 curHp = maxHp;
@@ -89,18 +95,33 @@ public class Player : MonoBehaviour
         if (curHp <= 0) {
             // Dead animation
             collider2d.enabled = false;
+            Invoke("Lose", 1.5f);
         }
-
-        StartCoroutine(OnHit());
     }
 
     IEnumerator OnHit() 
     {
-        print("TEST");
         SpriteRenderer sr = GetComponent<SpriteRenderer>();
-        GetComponent<SpriteRenderer>().color = new Color(1f, GetComponent<SpriteRenderer>().color.g - 0.02f, GetComponent<SpriteRenderer>().color.b - 0.02f);
+        if (isHit) {
+            GetComponent<SpriteRenderer>().color = new Color(1f, GetComponent<SpriteRenderer>().color.g - 0.04f, GetComponent<SpriteRenderer>().color.b - 0.04f);
+        } else {
+            GetComponent<SpriteRenderer>().color = new Color(1f, GetComponent<SpriteRenderer>().color.g + 0.04f, GetComponent<SpriteRenderer>().color.b + 0.04f);
+        }
+
+        if (GetComponent<SpriteRenderer>().color.g <= 1f) {
+            StopCoroutine(OnHit());
+        }
+
+        if (GetComponent<SpriteRenderer>().color.g <= 0) {
+            isHit = false;
+        }
 
         yield return new WaitForSeconds(0.02f);
         StartCoroutine(OnHit());
+    }
+
+    public void Lose()
+    {
+        main.GetComponent<Main>().Lose();
     }
 }
